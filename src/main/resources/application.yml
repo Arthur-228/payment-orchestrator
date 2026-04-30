@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: payment-orchestrator
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/conductor_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: conductor-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+  redis:
+    host: localhost
+    port: 6379
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.company.acquiring.conductor: DEBUG
+    org.springframework.kafka: WARN
