@@ -23,7 +23,7 @@ public class Payment {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String paymentId;           // Внешний idempotency ключ от мерчанта
+    private String paymentId;
 
     @Column(nullable = false)
     private String merchantId;
@@ -38,7 +38,7 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    private String externalTransactionId;   // ID в внешней платежной системе
+    private String externalTransactionId;
 
     private String failureReason;
 
