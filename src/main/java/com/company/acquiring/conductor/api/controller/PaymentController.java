@@ -6,14 +6,13 @@ import com.company.acquiring.conductor.idempotency.IdempotencyRequest;
 import com.company.acquiring.conductor.idempotency.IdempotencyResponse;
 import com.company.acquiring.conductor.orchestration.PaymentOrchestrator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
@@ -24,6 +23,9 @@ public class PaymentController {
     @PostMapping("/initiate")
     public ResponseEntity<PaymentResponse> initiatePayment(
             @Valid @RequestBody PaymentInitiateRequest request) {
+
+        log.info("Received payment initiation request: idempotencyKey={}, merchantId={}",
+                request.getIdempotencyKey(), request.getMerchantId());
 
         IdempotencyRequest idempotencyRequest = IdempotencyRequest.builder()
                 .idempotencyKey(request.getIdempotencyKey())
@@ -39,6 +41,9 @@ public class PaymentController {
                 .status(response.getStatus())
                 .isNew(response.isNew())
                 .build();
+
+        log.info("Payment processed successfully. paymentId={}, isNew={}",
+                response.getPaymentId(), response.isNew());
 
         return ResponseEntity.ok(paymentResponse);
     }
