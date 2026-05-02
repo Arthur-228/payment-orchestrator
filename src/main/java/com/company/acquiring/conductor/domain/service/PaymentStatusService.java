@@ -5,11 +5,13 @@ import com.company.acquiring.conductor.domain.model.PaymentStatus;
 import com.company.acquiring.conductor.domain.repository.PaymentRepository;
 import com.company.acquiring.conductor.orchestration.state.PaymentStateMachine;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentStatusService {
@@ -24,15 +26,21 @@ public class PaymentStatusService {
 
         if (!stateMachine.canTransition(payment.getStatus(), newStatus)) {
             throw new IllegalStateException(
-                    String.format("Invalid state transition: %s -> %s for payment %s",
+                    String.format("Invalid state transition from %s to %s for payment %s",
                             payment.getStatus(), newStatus, paymentId));
         }
 
+        PaymentStatus oldStatus = payment.getStatus();
         payment.setStatus(newStatus);
-        if (failureReason != null) {
+
+        if (failureReason != null && !failureReason.isBlank()) {
             payment.setFailureReason(failureReason);
         }
 
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+
+        log.info("Payment status changed: {} -> {} (paymentId={})", oldStatus, newStatus, paymentId);
+
+        return saved;
     }
 }
