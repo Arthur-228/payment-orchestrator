@@ -1,5 +1,6 @@
 package com.company.acquiring.conductor.orchestration;
 
+import com.company.acquiring.conductor.domain.service.PaymentStatusService;
 import com.company.acquiring.conductor.idempotency.IdempotencyRequest;
 import com.company.acquiring.conductor.idempotency.IdempotencyResponse;
 import com.company.acquiring.conductor.idempotency.IdempotencyService;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentOrchestrator {
 
     private final IdempotencyService idempotencyService;
+    private final PaymentStatusService paymentStatusService;
 
     /**
      * Основная точка входа для обработки платежа
